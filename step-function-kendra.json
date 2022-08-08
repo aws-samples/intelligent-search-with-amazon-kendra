@@ -1,0 +1,64 @@
+{
+  "StartAt": "Executing Topic Detection",
+  "States": {
+    "Executing Topic Detection": {
+      "Comment": "A state that is in charge of detecting the topics from documents store in a bucket of S3.",
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:300576735124:function:aprendiendoaws-iniciar-trabajo-de-deteccion:$LATEST",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Wait 5 min"
+    },
+    "Wait 5 min": {
+      "Comment": "A Wait state delays the state machine from continuing for a specified time.",
+      "Type": "Wait",
+      "Seconds": 300,
+      "Next": "Validating Topic Detection"
+    },
+    "Validating Topic Detection": {
+      "Comment": "A state that is in charge of validating the status of the detection topic job.",
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:300576735124:function:aprendiendoaws-validacion-trabajo:$LATEST",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "Next": "Is Detection Complete"
+    },
+    "Is Detection Complete": {
+      "Comment": "A state that is in charge of evaluating the results of the validation state.",
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.DetectionJobStatus",
+          "StringEquals": "COMPLETED",
+          "Next": "Making Facets"
+        },
+        {
+          "Variable": "$.Payload.DetectionJobStatus",
+          "StringEquals": "IN_PROGRESS",
+          "Next": "Wait 5 min"
+        }
+      ],
+      "Default": "Wait 5 min"
+    },
+    "Making Facets": {
+      "Comment": "A state that is in charge of structuring and copy the metadata to the Kendra's index.",
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:300576735124:function:aprendiendoaws-metadata:$LATEST",
+        "Payload": {
+          "Input.$": "$"
+        }
+      },
+      "End": true
+    }
+  }
+}

@@ -1,0 +1,4 @@
+pdfplumber
+Pillow
+Wand
+crypto

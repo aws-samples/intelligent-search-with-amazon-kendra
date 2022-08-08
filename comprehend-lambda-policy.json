@@ -1,0 +1,50 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "arn:aws:s3:::REPLACE-YOUR-BUCKET",
+                "arn:aws:s3:::REPLACE-YOUR-BUCKET/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "comprehend:DescribeTopicsDetectionJob",
+                "comprehend:StartTopicsDetectionJob"
+            ],
+            "Resource": "arn:aws:comprehend:us-east-1:*:topics-detection-job/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "comprehend:DetectDominantLanguage"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kendra:StartDataSourceSyncJob"
+            ],
+            "Resource": [
+                "arn:aws:kendra:us-east-1:*:index/*",
+                "arn:aws:kendra:us-east-1:*:index/*/data-source/*"
+            ]
+        },
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:iam::*:role/*comprehend*"
+        }
+    ]
+}
